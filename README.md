@@ -29,10 +29,6 @@ This application uses AI to:
 - Provide clear explanations of medicines  
 - Assist users in managing their medication effectively  
 
-## 📷 Demo
-
-_Add your demo video or screenshots here_
-
 ## ⚙️ Installation
 
 ```bash

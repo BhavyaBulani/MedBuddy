@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedBuddy — Know Your Medicine</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f5f0e8;--bg2:#ede7da;--bg3:#e4ddd0;
+  --surf:rgba(255,255,255,0.55);--surf2:rgba(255,255,255,0.75);--surf3:rgba(255,255,255,0.92);
+  --brd:rgba(45,106,45,0.13);--brd2:rgba(45,106,45,0.24);
+  --ink:#1a2e1a;--ink2:#3a5c3a;--ink3:#7a9e7a;
+  --gold:#2d6a2d;--gold2:#245224;--gold-dim:rgba(45,106,45,0.10);--gold-glow:rgba(45,106,45,0.18);
+  --mint:#3d8b40;--mint-dim:rgba(61,139,64,0.10);
+  --rose:#b94040;--rose-dim:rgba(185,64,64,0.10);
+  --amber:#7a5c28;--amber-dim:rgba(122,92,40,0.10);
+  --r:16px;--r-sm:9px;--r-lg:24px;
+  --sh:0 4px 32px rgba(45,106,45,0.08);--sh-lg:0 16px 64px rgba(45,106,45,0.14);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;height:100%;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;height:100%;line-height:1.6;overflow-x:hidden;}
+
+/* HEADER */
+.hdr{position:relative;top:0;left:0;right:0;z-index:500;height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:rgba(245,240,232,0.9);backdrop-filter:blur(16px);border-bottom:2px solid rgba(45,106,45,0.13);box-shadow:0 4px 20px rgba(45,106,45,0.08);}
+.logo{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;transition:transform 0.2s;}
+.logo:hover{transform:scale(1.02);}
+.logo-gem{width:40px;height:40px;background:linear-gradient(135deg,var(--gold),var(--mint));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 16px var(--gold-glow);transition:all 0.3s;}
+.logo-gem:hover{transform:scale(1.05);box-shadow:0 6px 24px var(--gold-glow),0 0 20px var(--gold-glow);}
+.logo-gem img{width:100%;height:100%;object-fit:contain;border-radius:10px;display:block;}
+.logo-wordmark{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--ink);text-shadow:0 2px 8px rgba(0,0,0,0.3);letter-spacing:-0.5px;}
+.logo-wordmark em{font-style:italic;color:var(--gold);}
+.lang-switch{display:flex;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);border-radius:24px;padding:4px;gap:3px;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+.lang-btn{padding:6px 14px;border-radius:20px;border:none;background:transparent;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;color:var(--ink);cursor:pointer;transition:all 0.25s;text-transform:uppercase;letter-spacing:0.5px;}
+.lang-btn:hover{color:var(--gold);transform:translateY(-1px);}
+.lang-btn.on{background:rgba(45,106,45,0.15);color:var(--gold);font-weight:700;box-shadow:0 2px 8px rgba(45,106,45,0.2);}
+.hdr-right{display:flex;align-items:center;gap:14px;}
+.btn-ghost{padding:8px 18px;border-radius:22px;border:1px solid rgba(45,106,45,0.2);background:rgba(245,240,232,0.1);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
+.btn-ghost:hover{background:rgba(245,240,232,0.2);border-color:rgba(45,106,45,0.3);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.2);}
+.btn-cta{padding:9px 20px;border-radius:22px;border:none;background:rgba(245,240,232,0.2);font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:var(--ink);cursor:pointer;transition:all 0.25s;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-transform:uppercase;letter-spacing:0.5px;border:1px solid rgba(45,106,45,0.3);}
+.btn-cta:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.3);background:rgba(245,240,232,0.3);}
+.login-btn{padding:9px 20px;border-radius:22px;border:1px solid var(--brd2);background:var(--surf2);font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:var(--gold);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
+.login-btn:hover{background:var(--gold-dim);border-color:var(--gold);transform:translateY(-2px);}
+.user-menu{position:relative;display:flex;align-items:center;}
+.av{width:40px;height:40px;border-radius:50%;background:rgba(245,240,232,0.15);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;border:2px solid rgba(45,106,45,0.2);transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+.av:hover{transform:scale(1.08);border-color:rgba(45,106,45,0.4);}
+.um-pop{position:absolute;top:100%;right:0;margin-top:8px;background:rgba(245,240,232,0.95);border:1px solid rgba(45,106,45,0.13);border-radius:14px;padding:12px 0;min-width:200px;box-shadow:0 8px 32px rgba(0,0,0,0.4);backdrop-filter:blur(16px);opacity:0;visibility:hidden;transform:translateY(-8px);transition:all 0.2s;z-index:1000;}
+.user-menu:hover .um-pop{opacity:1;visibility:visible;transform:translateY(0);}
+.um-em{padding:12px 18px;font-size:13px;color:var(--ink);border-bottom:1px solid rgba(45,106,45,0.1);word-break:break-word;}
+.um-pop button{display:block;width:100%;padding:10px 18px;text-align:left;background:none;border:none;font-family:'Outfit',sans-serif;font-size:13px;color:var(--ink);cursor:pointer;transition:all 0.2s;}
+.um-pop button:hover{background:rgba(45,106,45,0.1);color:var(--ink);}
+.theme-toggle{width:40px;height:40px;border-radius:50%;border:1px solid rgba(45,106,45,0.2);background:rgba(245,240,232,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all 0.2s;color:var(--ink);}
+.theme-toggle:hover{background:rgba(245,240,232,0.2);border-color:rgba(45,106,45,0.4);transform:scale(1.05) rotate(15deg);}
+.theme-toggle.dark{color:#fbbf24;}
+
+/* DARK MODE */
+body.dark{--bg:#0f1117;--bg2:#161a24;--bg3:#1a1f2e;--surf:rgba(26,31,46,0.7);--surf2:rgba(26,31,46,0.9);--surf3:rgba(26,31,46,0.95);--brd:rgba(255,255,255,0.08);--brd2:rgba(255,255,255,0.15);--ink:#f0f4ff;--ink2:#a8b4d0;--ink3:#6b7a99;--gold:#4f8ef7;--gold2:#3a7ae0;--gold-dim:rgba(79,142,247,0.12);--gold-glow:rgba(79,142,247,0.25);--mint:#34d399;--mint-dim:rgba(52,211,153,0.12);--rose:#f87171;--rose-dim:rgba(239,68,68,0.12);--amber:#fbbf24;--amber-dim:rgba(251,191,36,0.12);}
+body.dark .hdr{background:rgba(0,0,0,0.4);border-bottom-color:rgba(255,255,255,0.1);}
+body.dark .logo-wordmark{color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.5);}
+body.dark .lang-switch{background:rgba(255,255,255,0.1);}
+body.dark .um-pop{background:rgba(0,0,0,0.6);border-color:rgba(255,255,255,0.1);box-shadow:0 8px 32px rgba(0,0,0,0.6);}
+body.dark .theme-toggle.dark{color:#fbbf24;}
+body.dark .lang-btn{color:#fff;}
+body.dark .btn-ghost{color:#fff;}
+body.dark .btn-cta{color:#fff;}
+body.dark .av{color:#fff;}
+body.dark .hero{background:linear-gradient(180deg,rgba(0,0,0,0.3),rgba(0,0,0,0));}
+
+/* SPLASH SCREEN */
+.splash-screen{position:fixed;inset:0;background:#FAF7F0;z-index:99999;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity 0.6s ease;pointer-events:none;}
+.splash-screen.fade{opacity:0;}
+.splash-logo{width:350px;height:350px;object-fit:contain;animation:splash-pulse 2s ease-in-out infinite;}
+@keyframes splash-pulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 transparent);}50%{transform:scale(1.05);filter:drop-shadow(0 0 16px rgba(45,106,45,0.3));}}
+
+/* MAIN */
+.main{max-width:1060px;margin:0 auto;padding:0 24px 80px;margin-top:100px;}
+
+/* HERO */
+.hero{position:relative;top:0;left:0;right:0;width:100%;text-align:center;padding:80px 20px 60px;z-index:5;pointer-events:none;background:transparent;backdrop-filter:blur(6px);min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.hero::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;height:300px;background:radial-gradient(circle,rgba(45,106,45,0.15),transparent 70%);border-radius:50%;opacity:0;transition:opacity 0.4s ease;pointer-events:none;}
+.hero:hover::after{opacity:1;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);border-radius:30px;padding:6px 16px;font-size:11.5px;font-weight:600;color:#fff;letter-spacing:0.7px;text-transform:uppercase;margin-bottom:16px;pointer-events:auto;backdrop-filter:blur(10px);animation:badgeShimmer 2s ease-in-out infinite;}
+@keyframes badgeShimmer{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.8;transform:scale(1.02);}}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(36px,5vw,64px);font-weight:900;line-height:1.1;letter-spacing:-1.5px;color:#fff;margin-bottom:12px;text-shadow:0 2px 8px rgba(0,0,0,0.4);transition:all 0.3s ease;}
+.hero:hover h1{background:linear-gradient(90deg,#fff,var(--mint),#fff,var(--gold),#fff);background-size:200% auto;animation:heroGradientShift 3s linear infinite;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+@keyframes heroGradientShift{0%{background-position:0% center;}100%{background-position:200% center;}}
+.hero h1 em{font-style:italic;font-weight:400;color:#fff;}
+.hero p{font-size:15px;color:rgba(255,255,255,0.9);max-width:420px;margin:0 auto;line-height:1.6;font-weight:400;text-shadow:0 1px 4px rgba(0,0,0,0.2);}
+
+/* TABS */
+.tab-rail{position:sticky;top:70px;left:0;right:0;display:flex;gap:4px;border-bottom:2px solid rgba(255,255,255,0.1);overflow-x:auto;padding-bottom:0;background:rgba(0,0,0,0.3);backdrop-filter:blur(10px);z-index:500;padding:8px 24px;width:100%;box-sizing:border-box;}
+.tab-rail.tab-results{position:relative;top:0;} /* On results page, tab bar scrolls normally */
+.tab-rail::-webkit-scrollbar{display:none;}
+.tab-pill{padding:12px 26px;border:none;background:transparent;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;color:rgba(255,255,255,0.6);cursor:pointer;transition:all 0.25s;display:flex;align-items:center;gap:8px;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;flex-shrink:0;text-transform:uppercase;letter-spacing:0.3px;position:relative;}
+.tab-pill::after{content:'';position:absolute;bottom:-3px;left:50%;width:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--mint));transition:all 0.3s ease;transform:translateX(-50%);}
+.tab-pill:hover{color:#fff;transform:translateY(-2px);}
+.tab-pill.on{color:#fff;border-bottom-color:#fff;font-weight:900;text-shadow:0 2px 4px rgba(0,0,0,0.3);}
+.tab-pill.on::after{left:50%;width:100%;transform:translateX(-50%);}
+
+/* PANEL */
+.panel{position:fixed;background:var(--surf);border:2px solid var(--brd);border-radius:var(--r-lg);backdrop-filter:blur(16px);margin-bottom:16px;box-shadow:0 4px 24px rgba(0,0,0,0.04);transition:all 0.3s;position:relative;}
+.panel::before{content:'';position:absolute;inset:-1px;background:radial-gradient(circle at 30% 30%,rgba(45,106,45,0.2),transparent 70%);border-radius:var(--r-lg);opacity:0;transition:opacity 0.3s ease;pointer-events:none;z-index:0;}
+.panel{z-index:1;}
+.panel:hover{border-color:var(--brd2);box-shadow:0 8px 32px rgba(0,0,0,0.08);transform:translateY(-3px);}
+.panel:hover::before{opacity:1;}
+.panel-body{padding:28px;position:relative;z-index:1;}
+
+/* UPLOAD - two-card layout */
+.p-ey{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:4px;}
+.p-ttl{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:18px;}
+/* Outer two-column layout: big left card + narrow right card */
+.analyze-layout{display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start;}
+.drop-zone{border:2px dashed var(--gold);border-radius:var(--r);padding:40px 24px;text-align:center;cursor:pointer;transition:all 0.3s;background:linear-gradient(135deg,var(--gold-dim),rgba(61,139,64,0.05));position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:180px;}
+.drop-zone::before{content:'';position:absolute;inset:-2px;background:radial-gradient(circle,rgba(45,106,45,0.15),transparent 70%);border-radius:var(--r);opacity:0;transition:opacity 0.3s ease;pointer-events:none;}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--mint);background:linear-gradient(135deg,var(--mint-dim),var(--gold-dim));transform:scale(1.01);}
+.drop-zone:hover::before,.drop-zone.drag::before{opacity:1;}
+.drop-zone:hover .dz-icon,.drop-zone.drag .dz-icon{background:linear-gradient(135deg,var(--gold),var(--mint));color:white;transform:scale(1.15);box-shadow:0 4px 16px var(--gold-glow);}
+.dz-icon{width:52px;height:52px;background:var(--surf2);border:2px solid var(--brd2);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:24px;transition:all 0.3s;position:relative;z-index:1;}
+.dz-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px;position:relative;z-index:1;}
+.dz-sub{font-size:12px;color:var(--ink3);font-weight:500;position:relative;z-index:1;}
+.drop-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+.chip{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--gold-dim),var(--mint-dim));border:1.5px solid var(--gold);border-radius:12px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--gold);box-shadow:0 2px 8px var(--gold-glow);}
+.chip button{background:none;border:none;cursor:pointer;color:var(--gold);font-size:16px;opacity:0.8;transition:all 0.2s;}
+.chip button:hover{opacity:1;transform:scale(1.2);}
+.or-divider{display:flex;align-items:center;gap:12px;margin:14px 0;color:var(--ink3);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;}
+.or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--brd);}
+.tinput{width:100%;padding:13px 15px;border:1px solid var(--brd);border-radius:var(--r-sm);background:var(--bg3);font-family:'Outfit',sans-serif;font-size:13px;color:var(--ink);resize:vertical;outline:none;transition:border-color 0.2s,box-shadow 0.2s;line-height:1.6;min-height:120px;}
+.tinput:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,75,47,0.12),inset 0 0 0 1px var(--gold-dim);}
+.tinput::placeholder{color:var(--ink3);}
+.err-box{background:var(--rose-dim);border:1px solid rgba(185,64,64,0.22);border-radius:var(--r-sm);padding:11px 15px;color:var(--rose);font-size:13px;display:flex;align-items:center;gap:8px;margin-top:12px;}
+/* Right sidebar options card */
+.opts-card{background:var(--surf);border:2px solid var(--brd);border-radius:var(--r-lg);padding:28px;display:flex;flex-direction:column;gap:18px;box-shadow:0 4px 24px rgba(0,0,0,0.04);transition:all 0.3s;position:relative;}
+.opts-card::before{content:'';position:absolute;inset:-1px;background:radial-gradient(circle at 70% 30%,rgba(45,106,45,0.2),transparent 70%);border-radius:var(--r-lg);opacity:0;transition:opacity 0.3s ease;pointer-events:none;z-index:0;}
+.opts-card{z-index:1;}
+.opts-card:hover{border-color:var(--brd2);box-shadow:0 8px 32px rgba(0,0,0,0.08);transform:translateY(-3px);}
+.opts-card:hover::before{opacity:1;}
+.opt-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--gold);margin-bottom:8px;text-shadow:0 2px 4px rgba(0,0,0,0.04);position:relative;z-index:1;}
+.opt-in{width:100%;padding:12px 14px;border:2px solid var(--brd);border-radius:var(--r-sm);background:var(--bg3);font-family:'Outfit',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:all 0.25s;font-weight:500;position:relative;z-index:1;}
+.opt-in:focus{border-color:var(--gold);box-shadow:0 0 0 4px var(--gold-dim),inset 0 0 0 1px var(--gold-dim);}
+.opt-in:hover:not(:focus){border-color:var(--brd2);}
+.go-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--gold),var(--mint));color:#f5f0e8;border:none;border-radius:var(--r-sm);font-family:'Outfit',sans-serif;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.3s;box-shadow:0 6px 20px var(--gold-glow);text-transform:uppercase;letter-spacing:0.5px;position:relative;z-index:1;}
+.go-btn::before{content:'';position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,0.2),transparent 70%);border-radius:var(--r-sm);opacity:0;transition:opacity 0.3s ease;}
+.go-btn:hover:not(:disabled){transform:translateY(-4px);box-shadow:0 10px 32px var(--gold-glow);}
+.go-btn:hover:not(:disabled)::before{opacity:1;}
+.go-btn:disabled{opacity:0.65;cursor:not-allowed;}
+.privacy-note{font-size:11.5px;color:var(--ink3);text-align:center;display:flex;align-items:center;justify-content:center;gap:5px;}
+/* QUICK TOOLS STRIP */
+.quick-tools{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;}
+.qt-btn{display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:22px;border:1.5px solid var(--brd2);background:var(--surf2);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:var(--ink2);cursor:pointer;transition:all 0.25s;text-transform:uppercase;letter-spacing:0.5px;}
+.qt-btn:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-2px);box-shadow:0 4px 12px var(--gold-glow);}
+.qt-btn.speaking{background:var(--mint-dim);color:var(--mint);border-color:var(--mint);}
+.qt-btn.speaking:hover{box-shadow:0 4px 12px var(--mint-dim);}
+@media(max-width:800px){.analyze-layout{grid-template-columns:1fr;}}
+
+/* LOADING */
+.load-card{padding:64px 28px;text-align:center;background:linear-gradient(135deg,var(--gold-dim),var(--mint-dim));border:2px solid var(--brd2);border-radius:var(--r-lg);box-shadow:0 8px 32px rgba(45,106,45,0.12);}
+.orb-core{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--mint));border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto 28px;font-size:36px;animation:orbP 1.5s ease-in-out infinite;box-shadow:0 8px 24px var(--gold-glow);}
+@keyframes orbP{0%,100%{transform:scale(1);box-shadow:0 8px 24px var(--gold-glow);}50%{transform:scale(1.12);box-shadow:0 12px 40px var(--gold-glow);}}
+.load-ttl{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--ink);margin-bottom:8px;}
+.load-sub{font-size:14px;color:var(--ink3);margin-bottom:28px;font-weight:500;}
+.progress-bar-track{width:100%;height:6px;background:var(--brd);border-radius:3px;overflow:hidden;margin-bottom:18px;}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--mint));border-radius:3px;animation:progressFill 8s ease-out forwards;}
+@keyframes progressFill{0%{width:0%;}20%{width:15%;}40%{width:35%;}60%{width:65%;}80%{width:82%;}100%{width:92%;}}
+.load-steps{display:flex;flex-direction:column;gap:8px;max-width:300px;margin:0 auto;}
+.lstep{display:flex;align-items:center;gap:12px;padding:10px 16px;border-radius:10px;font-size:14px;transition:all 0.3s;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:0.3px;}
+.lstep.done{background:var(--mint-dim);color:var(--mint);}
+.lstep.active{background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold);box-shadow:0 2px 8px var(--gold-glow);}
+.lstep.pending{opacity:0.35;}
+
+/* RESULTS */
+.r-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+.r-ttl{font-family:'Playfair Display',serif;font-size:30px;font-weight:900;color:var(--ink);}
+.r-acts{display:flex;gap:10px;flex-wrap:wrap;}
+.act-btn{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:24px;border:1.5px solid var(--brd2);background:var(--surf3);font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:var(--ink);cursor:pointer;transition:all 0.25s;text-transform:uppercase;letter-spacing:0.5px;position:relative;overflow:hidden;backdrop-filter:blur(10px);}
+.act-btn::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(255,255,255,0.15),transparent 70%);opacity:0;transition:opacity 0.3s ease;pointer-events:none;}
+.act-btn:hover{border-color:var(--brd2);color:var(--ink);transform:translateY(-3px);box-shadow:0 4px 16px rgba(0,0,0,0.08);}
+.act-btn:hover::before{opacity:1;}
+.act-btn.g{border-color:var(--mint);color:var(--mint);background:linear-gradient(135deg,var(--surf3),var(--mint-dim));font-weight:700;}
+.act-btn.r{border-color:var(--rose);color:var(--rose);background:linear-gradient(135deg,var(--surf3),var(--rose-dim));font-weight:700;}
+.act-btn.a{border-color:var(--amber);color:var(--amber);background:linear-gradient(135deg,var(--surf3),var(--amber-dim));font-weight:700;}
+.disclaimer{display:flex;align-items:flex-start;gap:11px;background:var(--amber-dim);border:1px solid rgba(122,92,40,0.18);border-radius:var(--r-sm);padding:12px 16px;margin-bottom:18px;font-size:12.5px;color:var(--amber);line-height:1.5;}
+.sum-card{padding:24px;margin-bottom:16px;background:var(--surf3);border:2px solid var(--brd2);border-radius:var(--r);backdrop-filter:blur(12px);box-shadow:0 4px 16px rgba(0,0,0,0.06);}
+.sum-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:8px;}
+.sum-text{font-family:'Playfair Display',serif;font-size:17px;font-weight:500;font-style:italic;color:var(--ink);line-height:1.7;}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:20px;}
+.icard{padding:24px;background:var(--surf);border:2px solid var(--brd);border-left:4px solid var(--gold);border-radius:var(--r);transition:all 0.3s;box-shadow:0 2px 8px rgba(0,0,0,0.03);position:relative;overflow:hidden;}
+.icard::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at top right,rgba(45,106,45,0.1),transparent 70%);opacity:0;transition:opacity 0.3s ease;pointer-events:none;}
+.icard:hover{background:var(--surf2);transform:translateY(-4px);box-shadow:0 8px 24px var(--sh);}
+.icard:hover::before{opacity:1;}
+.icard > *{position:relative;z-index:1;}
+.ic-hd{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.ic-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:linear-gradient(135deg,var(--gold-dim),var(--mint-dim));box-shadow:0 2px 8px var(--gold-glow);}
+.ic-tag{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--gold);text-shadow:0 1px 2px rgba(0,0,0,0.04);}
+.ic-body{font-size:14px;color:var(--ink2);line-height:1.7;font-weight:500;}
+.list-rows{display:flex;flex-direction:column;gap:7px;}
+.list-row{display:flex;align-items:flex-start;gap:9px;padding:8px 12px;border-radius:8px;background:var(--bg3);font-size:13px;color:var(--ink2);line-height:1.5;animation:itemFadeUp 0.5s ease-out backwards;}
+.list-row:nth-child(1){animation-delay:0s;}
+.list-row:nth-child(2){animation-delay:0.05s;}
+.list-row:nth-child(3){animation-delay:0.1s;}
+.list-row:nth-child(4){animation-delay:0.15s;}
+.list-row:nth-child(5){animation-delay:0.2s;}
+@keyframes itemFadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.lbullet{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;background:var(--gold-dim);color:var(--gold);}
+.med-wrap{background:var(--surf);border:2px solid var(--brd);border-radius:var(--r);overflow:hidden;margin-bottom:20px;box-shadow:0 4px 16px rgba(0,0,0,0.04);}
+.med-head{padding:20px 24px;border-bottom:2px solid var(--brd);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,var(--gold-dim),transparent);}
+.med-head h2{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;display:flex;align-items:center;gap:10px;}
+.med-ct{font-size:12px;background:linear-gradient(135deg,var(--gold),var(--mint));color:#fff;padding:4px 14px;border-radius:20px;font-weight:800;box-shadow:0 2px 8px var(--gold-glow);text-transform:uppercase;}
+table{width:100%;border-collapse:collapse;}
+th{padding:14px 20px;background:linear-gradient(90deg,var(--bg3),rgba(0,0,0,0.02));font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--gold);text-align:left;border-bottom:2px solid var(--brd);}
+td{padding:16px 20px;font-size:14px;color:var(--ink2);border-bottom:1px solid var(--brd);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--gold-dim);transition:all 0.2s ease;}
+.med-name{font-weight:700;color:var(--ink);display:flex;align-items:center;gap:10px;}
+.med-dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--mint));flex-shrink:0;box-shadow:0 2px 6px var(--gold-glow);}
+.dbadge{display:inline-block;background:linear-gradient(135deg,rgba(79,142,247,0.15),rgba(52,211,153,0.1));color:#4f8ef7;border-radius:8px;padding:4px 11px;font-size:12px;font-weight:700;border:1px solid rgba(79,142,247,0.3);}
+.tbadge{display:inline-block;background:var(--mint-dim);color:var(--mint);border-radius:8px;padding:4px 11px;font-size:12px;font-weight:700;border:1px solid var(--mint-dim);}
+.durbadge{display:inline-block;background:var(--amber-dim);color:var(--amber);border-radius:8px;padding:4px 11px;font-size:12px;font-weight:700;border:1px solid var(--amber-dim);}
+.rem-btn{background:none;border:none;cursor:pointer;font-size:16px;padding:2px 4px;border-radius:4px;transition:opacity 0.2s;opacity:0.45;}
+.rem-btn:hover,.rem-btn.on{opacity:1;}
+
+/* SCHEDULE */
+.sched-grid{display:flex;flex-direction:column;gap:12px;margin-bottom:28px;}
+.sched-block{display:flex;gap:14px;align-items:flex-start;}
+.sched-time{min-width:68px;font-size:13px;font-weight:700;color:var(--gold);padding-top:10px;}
+.sched-line{display:flex;flex-direction:column;align-items:center;padding-top:13px;}
+.sched-dot{width:9px;height:9px;border-radius:50%;background:var(--gold);flex-shrink:0;}
+.sched-conn{width:2px;flex:1;background:var(--brd);min-height:28px;}
+.sched-meds{flex:1;display:flex;flex-wrap:wrap;gap:6px;padding-bottom:12px;}
+.sched-pill{background:var(--surf2);border:1px solid var(--brd2);border-radius:18px;padding:6px 13px;font-size:13px;font-weight:500;color:var(--ink2);display:flex;align-items:center;gap:5px;}
+.rem-list{display:flex;flex-direction:column;gap:10px;}
+.rem-item{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:var(--r-sm);border:1px solid var(--brd);background:var(--surf);}
+.rem-info{display:flex;align-items:center;gap:12px;}
+.rem-times{display:flex;gap:6px;flex-wrap:wrap;}
+.tpill{background:var(--gold-dim);color:var(--gold);border:1px solid var(--brd2);border-radius:14px;padding:3px 10px;font-size:11.5px;font-weight:600;}
+.tog{position:relative;width:38px;height:21px;flex-shrink:0;}
+.tog input{display:none;}
+.tog-sl{position:absolute;inset:0;background:var(--brd);border-radius:11px;cursor:pointer;transition:background 0.2s;}
+.tog-sl::after{content:'';position:absolute;width:15px;height:15px;border-radius:50%;background:white;top:3px;left:3px;transition:transform 0.2s;}
+.tog input:checked+.tog-sl{background:var(--gold);}
+.tog input:checked+.tog-sl::after{transform:translateX(17px);}
+
+/* HISTORY */
+.hist-empty{text-align:center;padding:60px 24px;color:var(--ink3);}
+.hist-items{display:flex;flex-direction:column;gap:12px;}
+.hist-card{background:var(--surf);border:2px solid var(--brd);border-radius:var(--r);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all 0.3s;box-shadow:0 2px 8px rgba(0,0,0,0.03);position:relative;overflow:hidden;}
+.hist-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle,rgba(45,106,45,0.1),transparent 70%);opacity:0;transition:opacity 0.3s ease;pointer-events:none;}
+.hist-card:hover{box-shadow:0 8px 24px var(--sh);border-color:var(--gold);transform:translateY(-4px);}
+.hist-card:hover::before{opacity:1;}
+.hist-card > *{position:relative;z-index:1;}
+.hist-left{display:flex;align-items:center;gap:16px;}
+.hist-icon{width:50px;height:50px;background:linear-gradient(135deg,var(--gold-dim),var(--mint-dim));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 2px 8px var(--gold-glow);transition:all 0.3s;}
+.hist-card:hover .hist-icon{transform:scale(1.1);}
+.hist-right{display:flex;align-items:center;gap:10px;}
+.hist-del{width:34px;height:34px;border-radius:50%;border:1px solid rgba(185,64,64,0.35);background:var(--rose-dim);color:var(--rose);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;font-size:15px;}
+.hist-del:hover{transform:scale(1.08);background:rgba(185,64,64,0.2);border-color:var(--rose);}
+
+/* PHARMACY */
+.pharm-section{margin-top:24px;padding:24px;background:linear-gradient(135deg,var(--mint-dim),var(--gold-dim));border:2px solid var(--mint);border-radius:var(--r);text-align:center;box-shadow:0 4px 16px rgba(61,139,64,0.15);}
+.pharm-section h3{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:10px;}
+.pharm-section p{font-size:14px;color:var(--ink2);margin-bottom:16px;font-weight:500;}
+.pharm-btn{padding:13px 32px;background:linear-gradient(135deg,var(--mint),#34d399);color:#fff;border:none;border-radius:50px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:all 0.25s;box-shadow:0 6px 20px var(--mint-dim);text-transform:uppercase;letter-spacing:0.5px;}
+.pharm-btn:hover{opacity:0.95;transform:translateY(-3px);box-shadow:0 10px 28px var(--mint-dim);}
+.pharm-btn:active{transform:translateY(-1px);}
+
+/* AUTH MODAL */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(12px);padding:24px;animation:f-in 0.3s ease;}
+.modal{background:var(--surf3);border-radius:var(--r-lg);padding:44px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,0.3);border:2px solid var(--brd2);position:relative;}
+.modal h2{font-family:'Playfair Display',serif;font-size:30px;font-weight:900;margin-bottom:8px;color:var(--ink);}
+.modal p{color:var(--ink3);font-size:14px;margin-bottom:28px;font-weight:500;}
+.fg{margin-bottom:18px;}
+.fg label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:8px;text-shadow:0 1px 2px rgba(0,0,0,0.04);}
+.fg input{width:100%;padding:13px 15px;border:1.5px solid var(--brd);border-radius:var(--r-sm);background:var(--bg3);font-family:'Outfit',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:all 0.25s;font-weight:500;}
+.fg input:focus{border-color:var(--gold);box-shadow:0 0 0 4px var(--gold-dim);}
+.sbtn{width:100%;padding:16px;background:linear-gradient(135deg,var(--gold),var(--mint));color:#f5f0e8;border:none;border-radius:var(--r-sm);font-family:'Outfit',sans-serif;font-size:15px;font-weight:800;cursor:pointer;margin-top:10px;transition:all 0.25s;box-shadow:0 4px 16px var(--gold-glow);text-transform:uppercase;letter-spacing:0.5px;}
+.sbtn:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--gold-glow);}
+.msw{text-align:center;margin-top:18px;font-size:13px;color:var(--ink3);font-weight:500;}
+.msw button{background:none;border:none;color:var(--gold);font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;transition:all 0.2s;}
+.msw button:hover{text-decoration:underline;transform:translateX(2px);}
+.close-m{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;border:1.5px solid var(--brd);background:var(--surf2);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;color:var(--ink2);transition:all 0.2s;}
+.close-m:hover{background:var(--gold-dim);color:var(--ink);border-color:var(--gold);}
+
+/* TOAST */
+.toast{position:fixed;bottom:26px;right:26px;background:var(--surf3);backdrop-filter:blur(16px);border:1px solid var(--brd2);color:var(--ink);padding:13px 20px;border-radius:12px;font-size:13.5px;display:flex;align-items:center;gap:9px;z-index:2000;box-shadow:var(--sh-lg);animation:toast-in 0.3s ease;}
+@keyframes toast-in{from{transform:translateY(14px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.fade-in{animation:f-in 0.35s ease;}
+@keyframes f-in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+@media(max-width:700px){.user-menu{grid-template-columns:1fr;}.hdr{padding:0 16px;height:64px;}.main{padding:0 16px 60px;}.info-grid{grid-template-columns:1fr;}.hdr-right{gap:8px;}.lang-switch{display:none;}.um-pop{right:-50%;min-width:160px;}}
+
+/* FIXED MEDICINE INFO SIDEBAR - HIDDEN */
+/* FIXED MEDICINE INFO SIDEBAR - HIDDEN */
+.medicine-sidebar{display:none !important;}
+.medicine-sidebar::-webkit-scrollbar{display:none;}
+.medicine-sidebar-title{display:none;}
+.medicine-item{display:none;}
+.med-name-sidebar{display:none;}
+.med-info-line{display:none;}
+.med-info-label{display:none;}
+.med-close-sidebar{display:none;}
+
+/* CHAT BUBBLE */
+.chat-fab{position:fixed;bottom:28px;right:28px;width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--mint));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 8px 32px var(--gold-glow);z-index:900;transition:all 0.3s;font-weight:700;}
+.chat-fab:hover{transform:scale(1.15);box-shadow:0 12px 48px var(--gold-glow);}
+.chat-fab:active{transform:scale(0.95);}
+.chat-fab .chat-badge{position:absolute;top:-4px;right:-4px;width:24px;height:24px;background:var(--rose);border-radius:50%;border:3px solid var(--bg);font-size:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;box-shadow:0 2px 8px var(--rose-dim);}
+.chat-panel{position:fixed;bottom:104px;right:28px;width:380px;max-height:600px;background:var(--surf3);border:2px solid var(--brd2);border-radius:24px;box-shadow:0 12px 48px rgba(0,0,0,0.15);display:flex;flex-direction:column;z-index:900;overflow:hidden;animation:chat-pop 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes chat-pop{from{opacity:0;transform:scale(0.85) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.chat-hdr{padding:18px 20px;background:linear-gradient(135deg,var(--gold),var(--mint));display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.chat-av{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;}
+.chat-hdr-info{flex:1;}
+.chat-hdr-name{font-weight:800;font-size:15px;color:#fff;text-transform:uppercase;letter-spacing:0.5px;}
+.chat-hdr-sub{font-size:12px;color:rgba(255,255,255,0.85);}
+.chat-hdr-close{background:rgba(255,255,255,0.2);border:none;color:#fff;cursor:pointer;font-size:20px;padding:4px 8px;border-radius:50%;transition:all 0.2s;}
+.chat-hdr-close:hover{background:rgba(255,255,255,0.4);}
+.chat-msgs{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;min-height:0;}
+.chat-msgs::-webkit-scrollbar{width:6px;}
+.chat-msgs::-webkit-scrollbar-thumb{background:var(--brd2);border-radius:3px;}
+.chat-msgs::-webkit-scrollbar-thumb:hover{background:var(--brd);}
+.cm{display:flex;gap:10px;align-items:flex-end;animation:f-in 0.3s ease;}
+.cm.user{flex-direction:row-reverse;}
+.cm-av{width:32px;height:32px;border-radius:50%;background:var(--gold-dim);border:1px solid var(--brd2);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;font-weight:700;}
+.cm-bbl{padding:11px 15px;border-radius:18px;max-width:75%;font-size:14px;line-height:1.6;word-break:break-word;font-weight:500;}
+.cm.bot .cm-bbl{background:var(--bg3);border:1px solid var(--brd);color:var(--ink);border-bottom-left-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.cm.user .cm-bbl{background:linear-gradient(135deg,var(--gold),var(--mint));color:#f5f0e8;border-bottom-right-radius:6px;box-shadow:0 2px 8px var(--gold-glow);}
+.cm-typing .cm-bbl{display:flex;align-items:center;gap:6px;padding:12px 18px;}
+.typing-dot{width:8px;height:8px;border-radius:50%;background:var(--ink3);animation:td 1.2s ease-in-out infinite;}
+.typing-dot:nth-child(2){animation-delay:0.2s;}
+.typing-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes td{0%,80%,100%{transform:scale(0.6);opacity:0.4;}40%{transform:scale(1);opacity:1;}}
+.chat-inp-row{padding:14px 16px;display:flex;gap:10px;align-items:center;border-top:1px solid var(--brd);flex-shrink:0;background:var(--surf3);}
+.chat-inp{flex:1;padding:10px 15px;border:1.5px solid var(--brd);border-radius:22px;background:var(--bg3);font-family:'Outfit',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:all 0.2s;font-weight:500;}
+.chat-inp:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim);}
+.chat-inp::placeholder{color:var(--ink3);font-weight:400;}
+.chat-send{width:40px;height:40px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--gold),var(--mint));color:#fff;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;font-weight:700;}
+.chat-send:hover:not(:disabled){transform:scale(1.08);box-shadow:0 4px 12px var(--gold-glow);}
+.chat-send:disabled{opacity:0.4;cursor:not-allowed;}
+.chat-ctx-tag{padding:8px 14px;font-size:11px;color:var(--ink3);background:var(--mint-dim);border-bottom:1px solid var(--brd);flex-shrink:0;display:flex;align-items:center;gap:6px;}
+@media(max-width:500px){.chat-panel{width:calc(100vw - 32px);right:16px;bottom:84px;}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+function useTheme() {
+  const [theme, setTheme] = useState(() => localStorage.getItem('mb_theme') || 'light');
+  useEffect(() => {
+    document.body.classList.toggle('dark', theme === 'dark');
+    localStorage.setItem('mb_theme', theme);
+  }, [theme]);
+  return [theme, () => setTheme(t => t === 'dark' ? 'light' : 'dark')];
+}
+
+function parseTimings(timing) {
+  if (!timing || timing === 'Not specified') return ['9:00 AM'];
+  const t = timing.toLowerCase();
+  if (t.includes('twice') || t.includes('bd') || t.includes('bid') || t.includes('दिन में दो बार')) return ['9:00 AM','9:00 PM'];
+  if (t.includes('three') || t.includes('tid') || t.includes('tds') || t.includes('दिन में तीन बार')) return ['8:00 AM','2:00 PM','8:00 PM'];
+  if (t.includes('four') || t.includes('qid') || t.includes('दिन में चार बार')) return ['8:00 AM','12:00 PM','4:00 PM','8:00 PM'];
+  if (t.includes('night') || t.includes('bed') || t.includes('रात')) return ['9:00 PM'];
+  if (t.includes('once') || t.includes('od') || t.includes('दिन में एक बार') || t.includes('सुबह एक बार')) return ['9:00 AM'];
+  return ['9:00 AM'];
+}
+
+function buildSchedule(meds) {
+  const slots = {};
+  (meds || []).forEach(m => {
+    parseTimings(m.timing).forEach(t => { if (!slots[t]) slots[t] = []; slots[t].push(m.name); });
+  });
+  return Object.entries(slots).sort((a,b) => {
+    const toMin = s => { const [h,rest]=s.split(':'); const [m,p]=rest.split(' '); let hr=parseInt(h); if(p==='PM'&&hr!==12)hr+=12; if(p==='AM'&&hr===12)hr=0; return hr*60+parseInt(m); };
+    return toMin(a[0])-toMin(b[0]);
+  });
+}
+
+function Toast({msg,icon}) {
+  return <div className="toast"><span>{icon}</span>{msg}</div>;
+}
+
+function AuthModal({mode, onClose, onAuth}) {
+  const [isLogin, setIsLogin] = useState(mode==='login');
+  const [name,setName]=useState('');
+  const [email,setEmail]=useState('');
+  const [phone,setPhone]=useState('');
+  const [pwd,setPwd]=useState('');
+  const [err,setErr]=useState('');
+  const submit = async () => {
+    if(!email||!pwd){setErr('Please fill all fields');return;}
+    if(!isLogin && !phone){setErr('Phone number is required');return;}
+    try {
+      const ep = isLogin ? '/api/auth/login' : '/api/auth/signup';
+      const body = isLogin ? {email,password:pwd} : {name,email,phone,password:pwd};
+      const res = await fetch(ep,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      const data = await res.json();
+      if(!res.ok){setErr(data.error||'Authentication failed');return;}
+      localStorage.setItem('mb_token',data.token);
+      localStorage.setItem('mb_user',JSON.stringify(data.user));
+      onAuth(data.user,data.token);
+      onClose();
+    } catch(e){setErr('Server unreachable. Make sure backend is running.');}
+  };
+  return (
+    <div className="modal-ov" onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div className="modal">
+        <button className="close-m" onClick={onClose}>✕</button>
+        <h2>{isLogin?'Welcome back':'Create account'}</h2>
+        <p>{isLogin?'Sign in to your MedBuddy account':'Start your health journey today'}</p>
+        {!isLogin&&<div className="fg"><label>Full Name</label><input placeholder="Your name" value={name} onChange={e=>setName(e.target.value)}/></div>}
+        <div className="fg"><label>Email</label><input type="email" placeholder="you@email.com" value={email} onChange={e=>setEmail(e.target.value)}/></div>
+        {!isLogin&&<div className="fg"><label>Emergency Contact Phone</label><input type="tel" placeholder="+91 XXXXX XXXXX" value={phone} onChange={e=>setPhone(e.target.value)} required/></div>}
+        <div className="fg"><label>Password</label><input type="password" placeholder="••••••••" value={pwd} onChange={e=>setPwd(e.target.value)}/></div>
+        {err&&<div className="err-box">⚠️ {err}</div>}
+        <button className="sbtn" onClick={submit}>{isLogin?'→ Sign In':'→ Create Account'}</button>
+        <div className="msw">{isLogin?"Don't have an account? ":"Have an account? "}<button onClick={()=>{setIsLogin(!isLogin);setErr('');}}>{isLogin?'Sign up':'Sign in'}</button></div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [user,setUser]=useState(null);
+  const [token,setToken]=useState(null);
+  const [modal,setModal]=useState(null);
+  const [tab,setTab]=useState('analyze');
+  const [lang,setLang]=useState('English');
+  const [theme,toggleTheme]=useTheme();
+  const [files,setFiles]=useState([]);
+  const [text,setText]=useState('');
+  const [age,setAge]=useState('');
+  const [loading,setLoading]=useState(false);
+  const [loadStep,setLoadStep]=useState(0);
+  const [result,setResult]=useState(null);
+  const [error,setError]=useState('');
+  const [drag,setDrag]=useState(false);
+  const [history,setHistory]=useState([]);
+  const [reminders,setReminders]=useState({});
+  const [toast,setToast]=useState(null);
+  const [speaking,setSpeaking]=useState(false);
+  const [splash,setSplash]=useState(true);
+  const fileRef=useRef();
+
+  // Alarm checker
+  useEffect(()=>{
+    const iv=setInterval(()=>{
+      const now=new Date();
+      let h=now.getHours(); const p=h>=12?'PM':'AM'; h=h%12||12;
+      const m=now.getMinutes().toString().padStart(2,'0');
+      const ts=`${h}:${m} ${p}`;
+      if(result?.medications){ result.medications.forEach(med=>{ if(reminders[med.name]&&parseTimings(med.timing).includes(ts)){showToast(`Time to take: ${med.name}`,'⏰'); try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator();o.frequency.value=520;o.connect(ctx.destination);o.start();setTimeout(()=>o.stop(),700);}catch(e){}} }); }
+    },60000);
+    return ()=>clearInterval(iv);
+  },[reminders,result]);
+
+  const showToast=(msg,icon='✅')=>{setToast({msg,icon});setTimeout(()=>setToast(null),3500);};
+
+  const deleteHistoryEntry=async(entryId)=>{
+    if(!token||!entryId)return;
+    if(!window.confirm('Delete this history item?'))return;
+    try{
+      const res=await fetch(`/api/history/${entryId}`,{method:'DELETE',headers:{'Authorization':`Bearer ${token}`}});
+      const data=await res.json().catch(()=>({}));
+      if(!res.ok)throw new Error(data.error||'Delete failed');
+      setHistory(prev=>prev.filter(h=>h.id!==entryId));
+      showToast('History item deleted','🗑️');
+    }catch(e){
+      console.error('❌ Delete history error:',e);
+      showToast(`Delete failed: ${e.message}`,'⚠️');
+    }
+  };
+
+  const fetchHistory=async(tkn)=>{
+    try{
+      console.log('📋 Fetching history with token:', tkn?.substring(0,20)+'...');
+      const res=await fetch('/api/history',{headers:{'Authorization':`Bearer ${tkn}`}});
+      console.log('📊 History response status:', res.status);
+      if(res.ok){
+        const d=await res.json();
+        console.log('✅ History data received:', d.length, 'records');
+        if(Array.isArray(d) && d.length > 0){
+          setHistory(d.map(x=>({id:x.id,date:new Date(x.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}),summary:x.summary,medications:(x.medications||[]).length,result:x,text:x.rawText})));
+          showToast('✅ History loaded','📋');
+        } else {
+          console.log('ℹ️ No history records found');
+        }
+      } else {
+        const errText = await res.text();
+        console.error('❌ History fetch error:', res.status, errText);
+      }
+    }catch(e){console.error('❌ Error fetching history:',e);}
+  };
+
+  useEffect(()=>{
+    const u=localStorage.getItem('mb_user');
+    const t=localStorage.getItem('mb_token');
+    if(u&&t){setUser(JSON.parse(u));setToken(t);fetchHistory(t);}
+  },[]);
+
+  // Splash screen effect
+  useEffect(()=>{
+    const timer1=setTimeout(()=>setSplash(false),2500);
+    return ()=>clearTimeout(timer1);
+  },[]);
+
+  const handleAuth=(u,t)=>{setUser(u);setToken(t);fetchHistory(t);};
+  const addFiles=(f)=>setFiles(p=>[...p,...Array.from(f)]);
+  const removeFile=(i)=>setFiles(p=>p.filter((_,j)=>j!==i));
+
+  const handleAnalyze=async()=>{
+    if(!token){setModal('login');return;}
+    if(!files.length&&!text.trim()){setError('Please upload a file or paste prescription text.');return;}
+    setError('');setLoading(true);setLoadStep(0);setResult(null);
+    try{
+      let txt=text.trim();
+      setLoadStep(1); await new Promise(r=>setTimeout(r,500));
+
+      if(files.length&&!txt){for(const f of files){if(f.type==='text/plain')txt+=await f.text();}}
+      setLoadStep(2); await new Promise(r=>setTimeout(r,500));
+      setLoadStep(3);
+      const fd=new FormData();
+      fd.append('text',txt||'');fd.append('age',age||'');fd.append('language',lang||'English');
+      files.forEach(f=>fd.append('files',f));
+      console.log('🔍 Sending analysis request...');
+      const res=await fetch('/api/analyze',{method:'POST',headers:{'Authorization':`Bearer ${token}`},body:fd});
+      const data=await res.json();
+      console.log('📦 API Response:', res.status, data);
+      if(!res.ok)throw new Error(data.error||'Server error');
+      setLoadStep(4); await new Promise(r=>setTimeout(r,400));
+      setResult(data.result);
+      console.log('💾 Calling fetchHistory...');
+      fetchHistory(token);
+      setTab('results');
+    }catch(e){console.error('❌ Analysis Error:', e); setError('Analysis failed: '+e.message);}
+    finally{setLoading(false);setLoadStep(0);}
+  };
+
+  const speakResult=()=>{
+    if(!result)return;
+    if(speaking){window.speechSynthesis.cancel();setSpeaking(false);return;}
+    const utterance=new SpeechSynthesisUtterance(
+      `Summary: ${result.summary}. Diagnosis: ${result.diagnosis}. ` +
+      `Medications: ${(result.medications||[]).map(m=>`${m.name}, ${m.dosage}, ${m.timing}, ${m.duration}`).join('. ')}.` +
+      (result.side_effects?.length?` Side effects: ${result.side_effects.join(', ')}.`:'') +
+      (result.follow_up?.length?` Follow up: ${result.follow_up.join(', ')}.`:'')
+    );
+    utterance.lang=lang==='Hindi'?'hi-IN':'en-IN';
+    utterance.rate=0.9;
+    utterance.onend=()=>setSpeaking(false);
+    setSpeaking(true);
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const handleCopy=()=>{
+    if(!result)return;
+    navigator.clipboard.writeText(`MedBuddy Report\n\n${result.summary}\n\nMedications:\n${(result.medications||[]).map(m=>`• ${m.name} — ${m.dosage}, ${m.timing}, ${m.duration}`).join('\n')}\n\n⚠️ AI-generated. Consult your doctor.`);
+    showToast('Copied to clipboard!');
+  };
+
+  const handleWhatsApp=()=>{
+    if(!result)return;
+    const t=encodeURIComponent(`MedBuddy: ${result.summary}\nMeds: ${(result.medications||[]).map(m=>m.name).join(', ')}\n⚠️ Consult doctor.`);
+    window.open(`https://wa.me/?text=${t}`,'_blank');
+  };
+
+  const findPharmacies=()=>{
+    if(navigator.geolocation){
+      navigator.geolocation.getCurrentPosition(pos=>{
+        const {latitude,longitude}=pos.coords;
+        window.open(`https://www.google.com/maps/search/pharmacy/@${latitude},${longitude},15z`,'_blank');
+      },()=>window.open('https://www.google.com/maps/search/pharmacies+near+me','_blank'));
+    } else {
+      window.open('https://www.google.com/maps/search/pharmacies+near+me','_blank');
+    }
+  };
+
+  const toggleReminder=(name)=>{
+    setReminders(p=>{
+      const next={...p,[name]:!p[name]};
+      if(next[name]){Notification.requestPermission().then(perm=>{if(perm==='granted')showToast(`Reminder set for ${name}`,'🔔');});}
+      return next;
+    });
+  };
+
+  const loadHistEntry=(e)=>{setResult(e.result);setText(e.text||'');setTab('results');};
+
+  const steps=[{l:'Reading document',i:'📄'},{l:'Extracting text',i:'🔍'},{l:'Analyzing with AI',i:'🧠'},{l:'Finalizing',i:'✅'}];
+
+  const logout=()=>{localStorage.removeItem('mb_user');localStorage.removeItem('mb_token');setUser(null);setToken(null);setHistory([]);setResult(null);};
+
+  return (
+    <>
+      {/* SPLASH SCREEN */}
+      {splash && (
+        <div className={`splash-screen ${!splash ? 'fade' : ''}`}>
+          <img className="splash-logo" src="iar_logo.png" alt="IAR Logo" />
+        </div>
+      )}
+
+      {/* HEADER */}
+      <header className="hdr" style={{justifyContent: 'space-between'}}>
+        <div style={{display:'flex',alignItems:'center',gap:16}}>
+          <div className="logo" style={{display:'flex',alignItems:'center',gap:2}}>
+            <div className="logo-gem" title="IAR Logo" style={{width:'70px', height:'40px'}}>
+              <img src="iar_logo.png" alt="IAR Logo" />
+            </div>
+          </div>
+          <div className="lang-switch">
+            <button className={`lang-btn ${lang==='English'?'on':''}`} onClick={()=>setLang('English')}>EN</button>
+            <button className={`lang-btn ${lang==='Hindi'?'on':''}`} onClick={()=>setLang('Hindi')}>हिं</button>
+          </div>
+        </div>
+        <div className="hdr-right" style={{display:'flex',alignItems:'center',gap:14}}>
+          <button className={`theme-toggle ${theme==='dark'?'dark':''}`} onClick={toggleTheme} title="Toggle theme">{theme==='dark'?'☀️':'🌙'}</button>
+          {user?(
+            <div className="user-menu">
+              <div className="av" title={user.email}>{user.email.charAt(0).toUpperCase()}</div>
+              <div className="um-pop">
+                <div className="um-em">📧 {user.email}</div>
+                <button onClick={logout}>🚪 Sign Out</button>
+              </div>
+            </div>
+          ):(
+            <button className="btn-cta" onClick={()=>setModal('login')} title="Sign in to MedBuddy">🔐 Sign In</button>
+          )}
+        </div>
+      </header>
+
+      {/* HERO VIDEO (Fullscreen on Analyze, Results, Schedule & History) */}
+      {(tab === 'analyze' || tab === 'results' || tab === 'schedule' || tab === 'history') && (
+        <div className="hero-video-container fade-in" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100vh', zIndex: 0, overflow: 'hidden' }}>
+          <video src="hero.mp4" autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', backgroundColor: '#000', filter: 'blur(3px)', opacity: 0.92 }}></video>
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(13,10,8,0.5), rgba(245,240,232,0.45))' }}></div>
+        </div>
+      )}
+      <main className="main" style={{ position: 'relative', zIndex: 10 }}>
+        {/* HERO */}
+        <div className="hero">
+          <div className="hero-badge">🏥 AI-Powered Healthcare Assistant</div>
+          <h1>Know your<br/><em>medicine.</em></h1>
+          <p>Upload a prescription or paste text. Get a clear, instant breakdown of your medications.</p>
+        </div>
+
+        {/* TABS */}
+        <div className={`tab-rail ${tab!=='analyze'?'tab-results':''}`}>
+          <button className={`tab-pill ${tab==='analyze'?'on':''}`} onClick={()=>setTab('analyze')}>🔬 Analyze</button>
+          {result&&<button className={`tab-pill ${tab==='results'?'on':''}`} onClick={()=>setTab('results')}>📋 Results</button>}
+          {result&&<button className={`tab-pill ${tab==='schedule'?'on':''}`} onClick={()=>setTab('schedule')}>⏰ Schedule</button>}
+          <button className={`tab-pill ${tab==='history'?'on':''}`} onClick={()=>setTab('history')}>📁 History</button>
+        </div>
+
+        {/* ANALYZE */}
+        {tab==='analyze'&&(
+          <div className="fade-in">
+            <div className="analyze-layout">
+
+              {/* LEFT: Big upload card */}
+              <div className="panel">
+                <div className="panel-body">
+                  <div className="p-ey">Step 1</div>
+                  <div className="p-ttl">Upload your prescription</div>
+                  <div
+                    className={`drop-zone ${drag?'drag':''}`}
+                    onDragOver={e=>{e.preventDefault();setDrag(true);}}
+                    onDragLeave={()=>setDrag(false)}
+                    onDrop={e=>{e.preventDefault();setDrag(false);addFiles(e.dataTransfer.files);}}
+                    onClick={()=>fileRef.current.click()}
+                  >
+                    <div className="dz-icon">📎</div>
+                    <div className="dz-title">Drop files here or click to browse</div>
+                    <div className="dz-sub">PDF, PNG, JPG, TXT · Max 10 MB</div>
+                    <input ref={fileRef} type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.txt" onChange={e=>addFiles(e.target.files)} style={{display:'none'}}/>
+                  </div>
+                  {files.length>0&&(
+                    <div className="chips">
+                      {files.map((f,i)=>(
+                        <div key={i} className="chip">📄 {f.name}<button onClick={()=>removeFile(i)}>✕</button></div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="or-divider">or paste text</div>
+                  <textarea
+                    className="tinput"
+                    placeholder="Paste prescription text, discharge summary, or any medical notes here..."
+                    value={text}
+                    onChange={e=>setText(e.target.value)}
+                  />
+                  {error&&<div className="err-box">⚠️ {error}</div>}
+                </div>
+              </div>
+
+              {/* RIGHT: Options sidebar card */}
+              <div className="opts-card">
+                <div>
+                  <div className="p-ey">Step 2</div>
+                  <div className="p-ttl" style={{fontSize:20}}>Options</div>
+                </div>
+                <div>
+                  <div className="opt-lbl">Patient Age <span style={{fontWeight:400,textTransform:'none',letterSpacing:0}}>(optional)</span></div>
+                  <input className="opt-in" type="number" placeholder="e.g. 45" value={age} onChange={e=>setAge(e.target.value)}/>
+                </div>
+                <div>
+                  <div className="opt-lbl">Output Language</div>
+                  <select className="opt-in" value={lang} onChange={e=>setLang(e.target.value)}>
+                    <option>English</option>
+                    <option>Hindi</option>
+                  </select>
+                </div>
+                <div style={{flex:1}}/>
+                <button className="go-btn" onClick={handleAnalyze} disabled={loading}>
+                  {loading?<><div className="spinner"/><span>Analyzing...</span></>:<>🔬 Analyze Prescription</>}
+                </button>
+                <div className="privacy-note">🔒 Your data is never stored or shared</div>
+                <div className="quick-tools" style={{justifyContent:'center'}}>
+                  {result&&(
+                    <button className={`qt-btn ${speaking?'speaking':''}`} onClick={speakResult}>
+                      {speaking?'🔇 Stop':'🔊 Read Aloud'}
+                    </button>
+                  )}
+                  <button className="qt-btn" onClick={findPharmacies}>🏥 Pharmacies</button>
+                </div>
+              </div>
+
+            </div>
+            {loading&&(
+              <div className="load-card fade-in">
+                <div className="orb-core">🧠</div>
+                <div className="load-ttl">Analyzing your prescription</div>
+                <div className="load-sub">Reading and simplifying your document...</div>
+                <div className="progress-bar-track">
+                  <div className="progress-bar-fill"></div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+
+        {/* RESULTS */}
+        {tab==='results'&&result&&(
+          <div className="fade-in">
+            {/* FIXED MEDICINE SIDEBAR - REMOVED */}
+    
+            <div className="r-hdr">
+              <div className="r-ttl">📋 Your Report</div>
+              <div className="r-acts">
+                <button className={`act-btn ${speaking?'g':''}`} onClick={speakResult}>{speaking?'🔇 Stop':'🔊 Read Aloud'}</button>
+                <button className="act-btn g" onClick={handleCopy}>📋 Copy</button>
+                <button className="act-btn g" onClick={handleWhatsApp}>💬 WhatsApp</button>
+                <button className="act-btn a" onClick={findPharmacies}>🏥 Nearby Pharmacies</button>
+                <button className="act-btn a" onClick={()=>{if(user?.phone){const cleanPhone=user.phone.replace(/\D/g,'');if(cleanPhone){window.location.href='tel:'+cleanPhone;}else{alert('Invalid phone number format.');}}else{alert('No emergency contact phone number saved. Please update your profile.');}}} title="Call your emergency contact">🚨 Emergency</button>
+                <button className="act-btn r" onClick={()=>{setResult(null);setTab('analyze');}}>+ New</button>
+              </div>
+            </div>
+
+            <div className="sum-card">
+              <div className="sum-tag">💡 Summary</div>
+              <div className="sum-text">{result.summary}</div>
+            </div>
+
+            <div className="info-grid">
+              <div className="icard">
+                <div className="ic-hd"><div className="ic-icon">🩺</div><div className="ic-tag">Diagnosis</div></div>
+                <div className="ic-body">{result.diagnosis}</div>
+              </div>
+              {result.side_effects?.length>0&&(
+                <div className="icard">
+                  <div className="ic-hd"><div className="ic-icon">⚠️</div><div className="ic-tag">Side Effects</div></div>
+                  <div className="list-rows">{result.side_effects.map((s,i)=><div key={i} className="list-row"><div className="lbullet">{i+1}</div>{s}</div>)}</div>
+                </div>
+              )}
+              {result.follow_up?.length>0&&(
+                <div className="icard">
+                  <div className="ic-hd"><div className="ic-icon">📅</div><div className="ic-tag">Follow-up</div></div>
+                  <div className="list-rows">{result.follow_up.map((s,i)=><div key={i} className="list-row"><div className="lbullet">✓</div>{s}</div>)}</div>
+                </div>
+              )}
+            </div>
+
+            <div className="med-wrap">
+              <div className="med-head">
+                <h2>💊 Medications <span className="med-ct">{result.medications?.length||0} found</span></h2>
+                <span style={{fontSize:12,color:'var(--ink3)'}}>🔔 = Set reminder</span>
+              </div>
+              <div style={{ overflowX: 'auto' }}>
+                <table>
+                  <thead><tr><th>Medicine</th><th>Use</th><th>Dosage & Freq</th><th>Duration</th><th>🔔</th></tr></thead>
+                  <tbody>
+                    {(result.medications||[]).map((m,i)=>{
+                      const useValue = (typeof m.use === 'string' && m.use.trim()) ? m.use.trim() : '—';
+                      return (
+                      <tr key={i}>
+                        <td><div className="med-name"><div className="med-dot"/>{m.name}</div></td>
+                        <td><span style={{fontSize:'12px',color:'var(--ink2)'}}>{useValue}</span></td>
+                        <td>
+                          <div style={{display:'flex',gap:'6px',flexWrap:'wrap'}}>
+                            <span className="dbadge">{m.dosage||'—'}</span>
+                            <span className="tbadge">{m.timing||'—'}</span>
+                          </div>
+                        </td>
+                        <td><span className="durbadge">{m.duration||'—'}</span></td>
+                        <td><button className={`rem-btn ${reminders[m.name]?'on':''}`} onClick={()=>toggleReminder(m.name)}>{reminders[m.name]?'🔔':'🔕'}</button></td>
+                      </tr>
+                    )})}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="pharm-section">
+              <h3>🏥 Need medicines?</h3>
+              <p>Find pharmacies and medical stores near your location</p>
+              <button className="pharm-btn" onClick={findPharmacies}>📍 Find Pharmacies Nearby</button>
+            </div>
+          </div>
+        )}
+
+        {/* SCHEDULE */}
+        {tab==='schedule'&&result&&(
+          <div className="fade-in">
+            <div className="panel">
+              <div className="panel-body">
+                <div className="p-ey">Daily Plan</div>
+                <div className="p-ttl">⏰ Medicine Schedule</div>
+                <div className="sched-grid">
+                  {buildSchedule(result.medications).map(([time,meds],i,arr)=>(
+                    <div key={time} className="sched-block">
+                      <div className="sched-time">{time}</div>
+                      <div className="sched-line"><div className="sched-dot"/>{i<arr.length-1&&<div className="sched-conn"/>}</div>
+                      <div className="sched-meds">{meds.map(m=><div key={m} className="sched-pill">💊 {m}</div>)}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{fontFamily:"'Playfair Display',serif",fontSize:18,marginBottom:14}}>🔔 Reminders</div>
+                <div className="rem-list">
+                  {(result.medications||[]).map(m=>(
+                    <div key={m.name} className="rem-item">
+                      <div className="rem-info">
+                        <span style={{fontSize:20}}>💊</span>
+                        <div>
+                          <div style={{fontWeight:600,fontSize:14}}>{m.name}</div>
+                          <div className="rem-times">{parseTimings(m.timing).map(t=><span key={t} className="tpill">{t}</span>)}</div>
+                        </div>
+                      </div>
+                      <label className="tog"><input type="checkbox" checked={!!reminders[m.name]} onChange={()=>toggleReminder(m.name)}/><div className="tog-sl"/></label>
+                    </div>
+                  ))}
+                </div>
+                <div className="pharm-section" style={{marginTop:24}}>
+                  <h3>🏥 Find Nearby Pharmacies</h3>
+                  <p>Locate medical stores close to you using GPS</p>
+                  <button className="pharm-btn" onClick={findPharmacies}>📍 Open in Maps</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* HISTORY */}
+        {tab==='history'&&(
+          <div className="fade-in">
+            {!user ? (
+              <div className="hist-empty">
+                <div style={{fontSize:48,marginBottom:14}}>🔒</div>
+                <div style={{fontFamily:"'Playfair Display',serif",fontSize:20,marginBottom:8}}>Sign in to view history</div>
+                <div style={{fontSize:14,marginBottom:18}}>Your past prescriptions are saved securely.</div>
+                <button className="btn-cta" onClick={()=>setModal('login')}>Sign In</button>
+              </div>
+            ) : history.length===0 ? (
+              <div className="hist-empty">
+                <div style={{fontSize:48,marginBottom:14}}>📁</div>
+                <div style={{fontFamily:"'Playfair Display',serif",fontSize:20,marginBottom:8}}>No history yet</div>
+                <div style={{fontSize:14}}>Analyze a prescription to see it here.</div>
+              </div>
+            ) : (
+              <div className="hist-items">
+                <div style={{fontFamily:"'Playfair Display',serif",fontSize:22,marginBottom:14}}>Previous Prescriptions</div>
+                {history.map(e=>(
+                  <div key={e.id} className="hist-card" onClick={()=>loadHistEntry(e)}>
+                    <div className="hist-left">
+                      <div className="hist-icon">📋</div>
+                      <div>
+                        <div style={{fontWeight:600,fontSize:14,marginBottom:3}}>{(e.summary||'').slice(0,72)}{(e.summary||'').length>72?'...':''}</div>
+                        <div style={{fontSize:12,color:'var(--ink3)'}}>{e.date} · {e.medications} medication{e.medications!==1?'s':''}</div>
+                      </div>
+                    </div>
+                    <div className="hist-right">
+                      <button className="hist-del" title="Delete history" onClick={(ev)=>{ev.stopPropagation();deleteHistoryEntry(e.id);}}>🗑️</button>
+                      <span style={{fontSize:18,color:'var(--ink3)'}}>→</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </main>
+
+      {modal&&<AuthModal mode={modal} onClose={()=>setModal(null)} onAuth={handleAuth}/>}
+      {toast&&<Toast msg={toast.msg} icon={toast.icon}/>}
+      <ChatBot token={token} prescriptionContext={result} />
+    </>
+  );
+}
+
+function ChatBot({ token, prescriptionContext }) {
+  const [open, setOpen] = useState(false);
+  const [msgs, setMsgs] = useState([
+    { role: 'bot', content: prescriptionContext
+        ? "Hi! I've loaded your prescription details. Ask me anything about your medications, side effects, or timings! 💊"
+        : "Hi! I'm MedBuddy. Upload a prescription or ask me any health question!" }
+  ]);
+  const [input, setInput] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [unread, setUnread] = useState(0);
+  const bottomRef = useRef(null);
+  const inpRef = useRef(null);
+
+  // Update welcome message when prescription changes
+  useEffect(() => {
+    if (prescriptionContext) {
+      setMsgs([{ role: 'bot', content: "Hi! I've loaded your prescription. Ask me anything about your medications! 💊" }]);
+    }
+  }, [prescriptionContext?.diagnosis]);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [msgs]);
+
+  useEffect(() => {
+    if (open) { setUnread(0); inpRef.current?.focus(); }
+  }, [open]);
+
+  const send = async () => {
+    const msg = input.trim();
+    if (!msg || busy) return;
+    setInput('');
+    const newMsgs = [...msgs, { role: 'user', content: msg }];
+    setMsgs([...newMsgs, { role: 'typing' }]);
+    setBusy(true);
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token && {'Authorization': `Bearer ${token}`}) },
+        body: JSON.stringify({
+          message: msg,
+          prescriptionContext: prescriptionContext || null,
+          history: msgs.filter(m => m.role !== 'typing').slice(-10)
+        })
+      });
+      const data = await res.json();
+      const reply = data.reply || "I couldn't get a response. Please try again.";
+      setMsgs([...newMsgs, { role: 'bot', content: reply }]);
+      if (!open) setUnread(u => u + 1);
+    } catch {
+      setMsgs([...newMsgs, { role: 'bot', content: 'Connection error. Please check the server is running.' }]);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onKey = e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } };
+  const quickQ = q => { setInput(q); setTimeout(() => inpRef.current?.focus(), 50); };
+
+  const QUICK = prescriptionContext
+    ? ['What are the side effects?', 'Can I take these with food?', 'What if I miss a dose?']
+    : ['What is MedBuddy?', 'How do I upload a prescription?', 'Is my data secure?'];
+
+  return (
+    <>
+      {/* CHAT PANEL */}
+      {open && (
+        <div className="chat-panel">
+          <div className="chat-hdr">
+            <div className="chat-av">🤖</div>
+            <div className="chat-hdr-info">
+              <div className="chat-hdr-name">MedBuddy AI</div>
+              <div className="chat-hdr-sub">{busy ? '✍️ typing...' : '● Online · powered by Gemini'}</div>
+            </div>
+            <button className="chat-hdr-close" onClick={() => setOpen(false)}>✕</button>
+          </div>
+          {prescriptionContext && (
+            <div className="chat-ctx-tag">📋 Context: {String(prescriptionContext.diagnosis||'').slice(0, 60)} ···</div>
+          )}
+          <div className="chat-msgs">
+            {msgs.map((m, i) => {
+              if (m.role === 'typing') return (
+                <div key={i} className="cm bot cm-typing">
+                  <div className="cm-av">🤖</div>
+                  <div className="cm-bbl">
+                    <div className="typing-dot"/><div className="typing-dot"/><div className="typing-dot"/>
+                  </div>
+                </div>
+              );
+              return (
+                <div key={i} className={`cm ${m.role}`}>
+                  <div className="cm-av">{m.role === 'bot' ? '🤖' : '👤'}</div>
+                  <div className="cm-bbl">{m.content}</div>
+                </div>
+              );
+            })}
+            {msgs.length === 1 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
+                {QUICK.map(q => (
+                  <button key={q} onClick={() => quickQ(q)} style={{
+                    background: 'var(--bg3)', border: '1px solid var(--brd)', borderRadius: 14,
+                    padding: '7px 12px', fontSize: 12, color: 'var(--ink2)', cursor: 'pointer', textAlign: 'left'
+                  }}>{q}</button>
+                ))}
+              </div>
+            )}
+            <div ref={bottomRef} />
+          </div>
+          <div className="chat-inp-row">
+            <input
+              ref={inpRef}
+              className="chat-inp"
+              placeholder="Ask about your medications..."
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={onKey}
+              disabled={busy}
+            />
+            <button className="chat-send" onClick={send} disabled={busy || !input.trim()}>➤</button>
+          </div>
+        </div>
+      )}
+
+      {/* FAB BUTTON */}
+      <button className="chat-fab" onClick={() => setOpen(o => !o)} title="Chat with MedBuddy AI">
+        {open ? '✕' : '💬'}
+        {unread > 0 && !open && <span className="chat-badge">{unread}</span>}
+      </button>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

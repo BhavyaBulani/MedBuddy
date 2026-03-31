@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Python virtual env
+.venv/
+venv/
+
+# Local agent/customization assets
+.agents/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
